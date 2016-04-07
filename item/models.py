@@ -51,12 +51,14 @@ class Item(models.Model):
     flags = models.IntegerField(default=0)
     timestamp = models.DateTimeField(auto_now_add=True)
     status = models.IntegerField(choices=ItemStatusChoices.get(), default=ItemStatusChoices.UNVERIFIED)
+    is_anonymous = models.BooleanField(default=False)
 
 
 class Rating(models.Model):
     item = models.ForeignKey(Item, related_name='ratings')
     author = models.ForeignKey(UserProfile)
     rating = models.FloatField(default=0.0)
+    is_anonymous = models.BooleanField(default=False)
 
     class Meta:
         unique_together = [['item', 'author']]
@@ -96,6 +98,7 @@ class Comment(Reactable):
     item = models.ForeignKey(Item, related_name='comments')
     author = models.ForeignKey(UserProfile)
     description = models.TextField()
+    is_anonymous = models.BooleanField(default=False)
 
     class Meta:
         unique_together = [['item', 'author']]
@@ -110,6 +113,7 @@ class Photo(Reactable):
     item = models.ForeignKey(Item, related_name='photos')
     author = models.ForeignKey(UserProfile)
     picture = models.ImageField()
+    is_anonymous = models.BooleanField(default=False)
 
     def recalculate_score(self):
         score = super(self).recalculate_score()

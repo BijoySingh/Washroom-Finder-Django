@@ -44,6 +44,7 @@ class ItemViewSet(viewsets.ModelViewSet):
                         description=serialized_data.validated_data['description'],
                         author=author,
                         status=status,
+                        is_anonymous=serialized_data.validated_data['is_anonymous'],
                 )
             return Response(self.serializer_class(item).data)
         else:
@@ -120,6 +121,7 @@ class ItemViewSet(viewsets.ModelViewSet):
         if serialized_data.is_valid():
             item.title = serialized_data.validated_data['title']
             item.description = serialized_data.validated_data['description']
+            item.is_anonymous = serialized_data.validated_data['is_anonymous']
             item.save()
 
             return Response(self.serializer_class(item).data)
@@ -143,6 +145,7 @@ class ItemViewSet(viewsets.ModelViewSet):
                 item.rating += serialized_data.validated_data['rating']
                 item.save()
 
+                rating.is_anonymous = serialized_data.validated_data['is_anonymous']
                 rating.rating = serialized_data.validated_data['rating']
                 rating.save()
             else:
@@ -150,6 +153,7 @@ class ItemViewSet(viewsets.ModelViewSet):
                         rating=serialized_data.validated_data['rating'],
                         item=item,
                         author=get_author(request.user),
+                        is_anonymous=serialized_data.validated_data['is_anonymous'],
                 )
                 item.rating += rating.rating
                 item.save()
@@ -176,12 +180,14 @@ class ItemViewSet(viewsets.ModelViewSet):
             comment = Comment.objects.filter(item=item, author__user=request.user).first()
             if comment:
                 comment.description = serialized_data.validated_data['description']
+                comment.is_anonymous = serialized_data.validated_data['is_anonymous']
                 comment.save()
             else:
                 comment = Comment.objects.create(
                         description=serialized_data.validated_data['description'],
                         item=item,
                         author=get_author(request.user),
+                        is_anonymous=serialized_data.validated_data['is_anonymous'],
                 )
             response = {
                 'success': True,
@@ -205,11 +211,13 @@ class ItemViewSet(viewsets.ModelViewSet):
             photo = Photo.objects.filter(item=item, author__user=request.user).first()
             if photo:
                 photo.description = serialized_data.validated_data['picture']
+                photo.is_anonymous = serialized_data.validated_data['is_anonymous']
                 photo.save()
             else:
                 photo = Photo.objects.create(
                         picture=serialized_data.validated_data['picture'],
                         item=item,
+                        is_anonymous=serialized_data.validated_data['is_anonymous'],
                         author=get_author(request.user),
                 )
             response = {
