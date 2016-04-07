@@ -6,11 +6,11 @@ SECRET_KEY = '<SECRET KEY>'
 
 ALLOWED_HOSTS = ['*']
 
-DB_NAME = 'project_hermes'
+DB_NAME = 'washroom_finder'
 
-DB_USERNAME = 'project_hermes'
+DB_USERNAME = 'washroom_finder'
 
-DB_PASSWORD = 'project_hermes'
+DB_PASSWORD = 'washroom_finder'
 
 DB_HOST_NAME = 'localhost'
 

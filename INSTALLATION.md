@@ -15,9 +15,9 @@ nodejs-legacy npm
 ```lang=bash
 ppsql # Now you must be in postgresql command line mode
 
-CREATE DATABASE project_hermes;
-CREATE USER project_hermes WITH PASSWORD 'project_hermes';
-GRANT ALL PRIVILEGES ON DATABASE project_hermes TO project_hermes;
+CREATE DATABASE washroom_finder;
+CREATE USER washroom_finder WITH PASSWORD 'washroom_finder';
+GRANT ALL PRIVILEGES ON DATABASE washroom_finder TO washroom_finder;
 \q
 exit
 ```
