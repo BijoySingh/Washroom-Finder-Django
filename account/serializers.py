@@ -11,3 +11,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
+
+class LoginSerializer(serializers.Serializer):
+    access_token = serializers.CharField()

@@ -22,12 +22,22 @@ class ItemSerializer(AuthorSerializer):
 
     male = serializers.SerializerMethodField()
     female = serializers.SerializerMethodField()
+    stars = serializers.SerializerMethodField()
 
     def get_male(self, item: Item):
         return item.gender == WashroomTypes.MALE or item.gender == WashroomTypes.BOTH
 
     def get_female(self,  item: Item):
         return item.gender == WashroomTypes.FEMALE or item.gender == WashroomTypes.BOTH
+
+    def get_stars(self, item: Item):
+        stars = dict()
+        stars['1'] = Rating.objects.filter(item=item, rating=1).count()
+        stars['2'] = Rating.objects.filter(item=item, rating=2).count()
+        stars['3'] = Rating.objects.filter(item=item, rating=3).count()
+        stars['4'] = Rating.objects.filter(item=item, rating=4).count()
+        stars['5'] = Rating.objects.filter(item=item, rating=5).count()
+        return stars
 
     class Meta:
         model = Item
@@ -50,35 +60,37 @@ class RatingSerializer(AuthorSerializer):
 
 class CreateItemSerializer(serializers.Serializer):
     title = serializers.CharField()
-    description = serializers.CharField()
+    description = serializers.CharField(allow_blank=True)
     latitude = serializers.FloatField()
     longitude = serializers.FloatField()
     is_anonymous = serializers.BooleanField()
     male = serializers.BooleanField()
     female = serializers.BooleanField()
+    is_free = serializers.BooleanField()
 
 
 class UpdateItemSerializer(serializers.Serializer):
     title = serializers.CharField()
-    description = serializers.CharField()
-    is_anonymous = serializers.BooleanField()
+    description = serializers.CharField(allow_blank=True)
+    is_anonymous = serializers.BooleanField(default=False)
     male = serializers.BooleanField()
     female = serializers.BooleanField()
+    is_free = serializers.BooleanField()
 
 
 class AddRatingSerializer(serializers.Serializer):
     rating = serializers.FloatField()
-    is_anonymous = serializers.BooleanField()
+    is_anonymous = serializers.BooleanField(default=False)
 
 
 class AddCommentSerializer(serializers.Serializer):
     description = serializers.CharField()
-    is_anonymous = serializers.BooleanField()
+    is_anonymous = serializers.BooleanField(default=False)
 
 
 class AddPhotoSerializer(serializers.Serializer):
     picture = serializers.ImageField()
-    is_anonymous = serializers.BooleanField()
+    is_anonymous = serializers.BooleanField(default=False)
 
 
 class BoundingBoxSerializer(serializers.Serializer):

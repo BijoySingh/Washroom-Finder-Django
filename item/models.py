@@ -55,7 +55,7 @@ class Item(models.Model):
     """
 
     title = models.TextField(max_length=256, blank=False)
-    description = models.TextField(blank=True)
+    description = models.TextField(blank=True, default="")
     author = models.ForeignKey(UserProfile)
     rating = models.FloatField(default=0.0)
     latitude = models.FloatField()
@@ -64,6 +64,7 @@ class Item(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     status = models.IntegerField(choices=ItemStatusChoices.get(), default=ItemStatusChoices.UNVERIFIED)
     is_anonymous = models.BooleanField(default=False)
+    is_free = models.BooleanField(default=True)
     gender = models.IntegerField(choices=WashroomTypes.get(), default=WashroomTypes.BOTH)
 
     def recalculate_rating(self):
@@ -132,7 +133,7 @@ class Comment(Reactable):
         unique_together = [['item', 'author']]
 
     def recalculate_score(self):
-        score = super(self).recalculate_score()
+        score = super().recalculate_score()
         self.author.reputation += (score - self.experience)
         self.experience = score
 
@@ -144,6 +145,6 @@ class Photo(Reactable):
     is_anonymous = models.BooleanField(default=False)
 
     def recalculate_score(self):
-        score = super(self).recalculate_score()
+        score = super().recalculate_score()
         self.author.reputation += (score - self.experience)
         self.experience = score

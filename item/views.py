@@ -11,7 +11,7 @@ from account.models import UserProfile
 from item.models import Item, Comment, Reaction, ReactionChoices, Photo, Rating, ItemStatusChoices, WashroomTypes
 from item.serializers import CreateItemSerializer, ItemSerializer, BoundingBoxSerializer, CommentSerializer, \
     PhotoSerializer, UpdateItemSerializer, AddRatingSerializer, AddCommentSerializer, \
-    AddPhotoSerializer
+    AddPhotoSerializer, RatingSerializer
 from project_hermes.hermes_config import Configurations
 
 
@@ -66,6 +66,7 @@ class ItemViewSet(viewsets.ModelViewSet):
                         author=author,
                         status=status,
                         is_anonymous=serialized_data.validated_data['is_anonymous'],
+                        is_free=serialized_data.validated_data['is_free'],
                         gender=self.get_washroom_type(serialized_data.validated_data['male'],
                                                       serialized_data.validated_data['female'])
                 )
@@ -102,14 +103,16 @@ class ItemViewSet(viewsets.ModelViewSet):
     def get_user_comment(self, request, pk):
         item = get_object_or_404(Item, pk=pk)
         comment = Comment.objects.filter(author__user=request.user, item=item).first()
+        rating = Rating.objects.filter(author__user=request.user, item=item).first()
+        response = {'has_comment':False, 'has_rating':False}
         if comment:
-            response = {
-                'success': True,
-                'result': CommentSerializer(comment).data
-            }
-            return Response(response)
-        else:
-            return Response({'success': False})
+            response['has_comment'] = True
+            response['comment'] = CommentSerializer(comment).data
+        if rating:
+            response['has_rating'] = True
+            response['rating'] = RatingSerializer(rating).data
+
+        return Response(response)
 
     @detail_route()
     def get_comments(self, request, pk):
@@ -147,6 +150,7 @@ class ItemViewSet(viewsets.ModelViewSet):
             item.is_anonymous = serialized_data.validated_data['is_anonymous']
             item.gender = self.get_washroom_type(serialized_data.validated_data['male'],
                                                  serialized_data.validated_data['female'])
+            item.is_free = serialized_data.validated_data['is_free']
             item.save()
 
             return Response(self.serializer_class(item).data)
@@ -164,13 +168,14 @@ class ItemViewSet(viewsets.ModelViewSet):
         item = self.get_object()
         serialized_data = AddRatingSerializer(data=request.data)
         if serialized_data.is_valid():
-            if not (0.0 <= serialized_data.validated_data['rating'] <= 5.0):
+            stars = int(round(serialized_data.validated_data['rating']))
+            if not (0.0 <= stars <= 5.0):
                 return Response({'success': False, 'message': 'Incorrect Rating'}, status=HTTP_400_BAD_REQUEST)
 
             rating = Rating.objects.filter(item=item, author__user=request.user).first()
             if rating:
                 rating.is_anonymous = serialized_data.validated_data['is_anonymous']
-                rating.rating = serialized_data.validated_data['rating']
+                rating.rating = stars
                 rating.save()
 
                 item.recalculate_rating()
@@ -178,7 +183,7 @@ class ItemViewSet(viewsets.ModelViewSet):
 
             else:
                 rating = Rating.objects.create(
-                        rating=serialized_data.validated_data['rating'],
+                        rating=stars,
                         item=item,
                         author=get_author(request.user),
                         is_anonymous=serialized_data.validated_data['is_anonymous'],

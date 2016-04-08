@@ -23,9 +23,11 @@ from django.contrib import admin
 from django.views.static import serve
 from rest_framework.routers import DefaultRouter
 
+from account.views import AccountViewSet
 from item.views import ItemViewSet, CommentViewSet, PhotoViewSet
 
 router = DefaultRouter()
+router.register('account', AccountViewSet, base_name='account')
 router.register('item', ItemViewSet, base_name='item')
 router.register('comment', CommentViewSet, base_name='post')
 router.register('photo', PhotoViewSet, base_name='picture')

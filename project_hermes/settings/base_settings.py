@@ -106,3 +106,11 @@ STATICFILES_DIRS = (
     # Add all static files here. use os.path.join(BASE_DIR, 'your/staticfile/path')
     os.path.join(BASE_DIR, 'static/'),
 )
+
+# Rest frameworkwork settings
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+        'account.tokenauth.TokenAuthentication',
+    )
+}

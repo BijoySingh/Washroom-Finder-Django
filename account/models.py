@@ -9,6 +9,7 @@ from django.utils import timezone
 
 class UserProfile(models.Model):
     user = models.ForeignKey(User)
+    picture = models.URLField(blank=True, max_length=1024)
     reputation = models.FloatField(default=0)
 
     def __str__(self):
