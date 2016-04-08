@@ -36,6 +36,18 @@ class ReactionChoices:
                 (cls.DOWNVOTE, 'Downvote'),
                 (cls.FLAG, 'Flag')]
 
+class WashroomTypes:
+    MALE = 0
+    FEMALE = 1
+    BOTH = 2
+    NONE = 3
+
+    @classmethod
+    def get(cls):
+        return [(cls.MALE, 'Male'),
+                (cls.FEMALE, 'Female'),
+                (cls.BOTH, 'Both'),
+                (cls.NONE, 'None'),]
 
 class Item(models.Model):
     """
@@ -52,6 +64,7 @@ class Item(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     status = models.IntegerField(choices=ItemStatusChoices.get(), default=ItemStatusChoices.UNVERIFIED)
     is_anonymous = models.BooleanField(default=False)
+    gender = models.IntegerField(choices=WashroomTypes.get(), default=WashroomTypes.BOTH)
 
     def recalculate_rating(self):
         self.rating = 0.0

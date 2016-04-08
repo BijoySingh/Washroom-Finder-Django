@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from account.serializers import UserProfileSerializer
-from item.models import Item, Comment, Photo, Rating
+from item.models import Item, Comment, Photo, Rating, WashroomTypes
 
 
 class AuthorSerializer(serializers.ModelSerializer):
@@ -19,6 +19,16 @@ class AuthorSerializer(serializers.ModelSerializer):
 
 
 class ItemSerializer(AuthorSerializer):
+
+    male = serializers.SerializerMethodField()
+    female = serializers.SerializerMethodField()
+
+    def get_male(self, item: Item):
+        return item.gender == WashroomTypes.MALE or item.gender == WashroomTypes.BOTH
+
+    def get_female(self,  item: Item):
+        return item.gender == WashroomTypes.FEMALE or item.gender == WashroomTypes.BOTH
+
     class Meta:
         model = Item
 
@@ -44,12 +54,16 @@ class CreateItemSerializer(serializers.Serializer):
     latitude = serializers.FloatField()
     longitude = serializers.FloatField()
     is_anonymous = serializers.BooleanField()
+    male = serializers.BooleanField()
+    female = serializers.BooleanField()
 
 
 class UpdateItemSerializer(serializers.Serializer):
     title = serializers.CharField()
     description = serializers.CharField()
     is_anonymous = serializers.BooleanField()
+    male = serializers.BooleanField()
+    female = serializers.BooleanField()
 
 
 class AddRatingSerializer(serializers.Serializer):

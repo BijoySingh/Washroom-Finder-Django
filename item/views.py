@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_403_FORBIDDEN
 
 from account.models import UserProfile
-from item.models import Item, Comment, Reaction, ReactionChoices, Photo, Rating, ItemStatusChoices
+from item.models import Item, Comment, Reaction, ReactionChoices, Photo, Rating, ItemStatusChoices, WashroomTypes
 from item.serializers import CreateItemSerializer, ItemSerializer, BoundingBoxSerializer, CommentSerializer, \
     PhotoSerializer, UpdateItemSerializer, AddRatingSerializer, AddCommentSerializer, \
     AddPhotoSerializer
@@ -27,6 +27,17 @@ class ItemViewSet(viewsets.ModelViewSet):
     @staticmethod
     def is_valid_location(latitude, longitude):
         return -90.0 <= latitude <= 90.0 and -180.0 <= longitude <= 180.0
+
+    @staticmethod
+    def get_washroom_type(male, female):
+        if male and female:
+            return WashroomTypes.BOTH
+        elif male:
+            return WashroomTypes.MALE
+        elif female:
+            return WashroomTypes.FEMALE
+        else:
+            return WashroomTypes.NONE
 
     def create(self, request, *args, **kwargs):
         """
@@ -55,6 +66,8 @@ class ItemViewSet(viewsets.ModelViewSet):
                         author=author,
                         status=status,
                         is_anonymous=serialized_data.validated_data['is_anonymous'],
+                        gender=self.get_washroom_type(serialized_data.validated_data['male'],
+                                                      serialized_data.validated_data['female'])
                 )
             return Response(self.serializer_class(item).data)
         else:
@@ -132,6 +145,8 @@ class ItemViewSet(viewsets.ModelViewSet):
             item.title = serialized_data.validated_data['title']
             item.description = serialized_data.validated_data['description']
             item.is_anonymous = serialized_data.validated_data['is_anonymous']
+            item.gender = self.get_washroom_type(serialized_data.validated_data['male'],
+                                                 serialized_data.validated_data['female'])
             item.save()
 
             return Response(self.serializer_class(item).data)
