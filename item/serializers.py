@@ -22,22 +22,12 @@ class ItemSerializer(AuthorSerializer):
 
     male = serializers.SerializerMethodField()
     female = serializers.SerializerMethodField()
-    stars = serializers.SerializerMethodField()
 
     def get_male(self, item: Item):
         return item.gender == WashroomTypes.MALE or item.gender == WashroomTypes.BOTH
 
     def get_female(self,  item: Item):
         return item.gender == WashroomTypes.FEMALE or item.gender == WashroomTypes.BOTH
-
-    def get_stars(self, item: Item):
-        stars = dict()
-        stars['1'] = Rating.objects.filter(item=item, rating=1).count()
-        stars['2'] = Rating.objects.filter(item=item, rating=2).count()
-        stars['3'] = Rating.objects.filter(item=item, rating=3).count()
-        stars['4'] = Rating.objects.filter(item=item, rating=4).count()
-        stars['5'] = Rating.objects.filter(item=item, rating=5).count()
-        return stars
 
     class Meta:
         model = Item

@@ -117,9 +117,23 @@ class ItemViewSet(viewsets.ModelViewSet):
     @detail_route()
     def get_comments(self, request, pk):
         item = get_object_or_404(Item, pk=pk)
-        comments = item.comments.all()
+        comments = item.comments.all().order_by('-experience')
         response = {
             'results': CommentSerializer(comments, many=True).data
+        }
+        return Response(response)
+
+    @detail_route()
+    def get_stars(self, request, pk):
+        item = get_object_or_404(Item, pk=pk)
+        stars = dict()
+        stars['1'] = Rating.objects.filter(item=item, rating=1).count()
+        stars['2'] = Rating.objects.filter(item=item, rating=2).count()
+        stars['3'] = Rating.objects.filter(item=item, rating=3).count()
+        stars['4'] = Rating.objects.filter(item=item, rating=4).count()
+        stars['5'] = Rating.objects.filter(item=item, rating=5).count()
+        response = {
+            'results': stars
         }
         return Response(response)
 
