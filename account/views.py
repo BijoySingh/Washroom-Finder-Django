@@ -2,18 +2,23 @@
 import facebook
 from django.contrib.auth.models import User
 from rest_framework import viewsets
-from rest_framework.decorators import list_route
+from rest_framework.decorators import list_route, detail_route
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST
 
 from account.models import UserProfile
 from account.models import UserToken
-from account.serializers import UserProfileSerializer, LoginSerializer
+from account.serializers import UserProfileSerializer, LoginSerializer, UserDetailsProfileSerializer
 
 
 class AccountViewSet(viewsets.GenericViewSet):
     serializer_class = LoginSerializer
+
+    @list_route(methods=['GET'], permission_classes=[IsAuthenticated])
+    def get_profile(self, request):
+        profile = UserProfile.objects.filter(user=request.user).first()
+        return Response({'result': UserDetailsProfileSerializer(profile).data})
 
     @list_route(methods=['POST'])
     def login(self, request):
@@ -29,7 +34,7 @@ class AccountViewSet(viewsets.GenericViewSet):
             graph = facebook.GraphAPI(access_token=access_token, version='2.5')
 
             try:
-                fb_user = graph.get_object('me?fields=id,first_name,last_name,picture,email')
+                fb_user = graph.get_object('me?fields=id,first_name,last_name,picture.height(256),email')
             except facebook.GraphAPIError:
                 return Response({'success': False, 'message': 'Invalid token'}, status=HTTP_400_BAD_REQUEST)
 

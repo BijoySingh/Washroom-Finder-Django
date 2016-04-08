@@ -1,3 +1,8 @@
 
 class Configurations:
     AUTO_VERIFICATION_REPUTATION = 500
+    BEGINNER = -50
+    INTERMEDIATE = 200
+    TRUSTED = 500
+    EXPERT = 1000
+    BANNED = -200
