@@ -2,16 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3fda9e63-3460-4cba-96e5-72d680a4703d" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/account/tokenauth.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/account/models.py" afterPath="$PROJECT_DIR$/account/models.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/account/serializers.py" afterPath="$PROJECT_DIR$/account/serializers.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/account/views.py" afterPath="$PROJECT_DIR$/account/views.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/item/models.py" afterPath="$PROJECT_DIR$/item/models.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/item/serializers.py" afterPath="$PROJECT_DIR$/item/serializers.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/item/views.py" afterPath="$PROJECT_DIR$/item/views.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/project_hermes/settings/base_settings.py" afterPath="$PROJECT_DIR$/project_hermes/settings/base_settings.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/project_hermes/urls.py" afterPath="$PROJECT_DIR$/project_hermes/urls.py" />
     </list>
     <ignored path="project_hermes.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -38,11 +31,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="models.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/item/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="114" column="55" selection-start-line="114" selection-start-column="55" selection-end-line="114" selection-end-column="55" />
+            <state vertical-scroll-proportion="0.43890274">
+              <caret line="116" column="0" selection-start-line="116" selection-start-column="0" selection-end-line="120" selection-end-column="99" />
               <folding>
                 <element signature="e#0#39#0" expanded="true" />
               </folding>
@@ -104,11 +97,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/item/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="1.0847881">
-              <caret line="282" column="27" selection-start-line="282" selection-start-column="27" selection-end-line="282" selection-end-column="27" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="252" column="34" selection-start-line="252" selection-start-column="34" selection-end-line="252" selection-end-column="34" />
               <folding />
             </state>
           </provider>
@@ -887,13 +880,21 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/item/models.py">
+    <entry file="file://$PROJECT_DIR$/item/serializers.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="114" column="55" selection-start-line="114" selection-start-column="55" selection-end-line="114" selection-end-column="55" />
+          <caret line="32" column="34" selection-start-line="32" selection-start-column="34" selection-end-line="32" selection-end-column="34" />
           <folding>
-            <element signature="e#0#39#0" expanded="true" />
+            <element signature="e#0#38#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/item/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="252" column="34" selection-start-line="252" selection-start-column="34" selection-end-line="252" selection-end-column="34" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -907,21 +908,13 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/item/serializers.py">
+    <entry file="file://$PROJECT_DIR$/item/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="32" column="34" selection-start-line="32" selection-start-column="34" selection-end-line="32" selection-end-column="34" />
+        <state vertical-scroll-proportion="0.43890274">
+          <caret line="116" column="0" selection-start-line="116" selection-start-column="0" selection-end-line="120" selection-end-column="99" />
           <folding>
-            <element signature="e#0#38#0" expanded="true" />
+            <element signature="e#0#39#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/item/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.0847881">
-          <caret line="282" column="27" selection-start-line="282" selection-start-column="27" selection-end-line="282" selection-end-column="27" />
-          <folding />
         </state>
       </provider>
     </entry>
