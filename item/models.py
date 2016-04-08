@@ -53,6 +53,21 @@ class Item(models.Model):
     status = models.IntegerField(choices=ItemStatusChoices.get(), default=ItemStatusChoices.UNVERIFIED)
     is_anonymous = models.BooleanField(default=False)
 
+    def recalculate_rating(self):
+        self.rating = 0.0
+        weight = 0.0
+        for rating in self.ratings.all():
+            rating_weight = 1.0
+            # Could be a function of the user : max(0.0, rating.author.reputation)
+
+            self.rating += rating.rating * rating_weight
+            weight += rating_weight
+
+        if weight == 0.0:
+            return 0.0
+        self.rating /= weight
+
+
 
 class Rating(models.Model):
     item = models.ForeignKey(Item, related_name='ratings')

@@ -24,6 +24,10 @@ class ItemViewSet(viewsets.ModelViewSet):
     serializer_class = ItemSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
+    @staticmethod
+    def is_valid_location(latitude, longitude):
+        return -90.0 <= latitude <= 90.0 and -180.0 <= longitude <= 180.0
+
     def create(self, request, *args, **kwargs):
         """
         create the item
@@ -33,13 +37,19 @@ class ItemViewSet(viewsets.ModelViewSet):
 
         serialized_data = CreateItemSerializer(data=request.data)
         if serialized_data.is_valid():
-            item = Item.objects.filter(user=request.user, location=serialized_data.validated_data['location']).first()
+            latitude = serialized_data.validated_data['latitude']
+            longitude = serialized_data.validated_data['longitude']
+
+            if not self.is_valid_location(latitude, longitude):
+                return Response({'success': False, 'message': 'Incorrect Location'}, status=HTTP_400_BAD_REQUEST)
+
+            item = Item.objects.filter(author__user=request.user, longitude=longitude, latitude=latitude).first()
             author = get_author(request.user)
-            status = ItemStatusChoices.UNVERIFIED if author < Configurations.AUTO_VERIFICATION_REPUTATION else ItemStatusChoices.VERIFIED
+            status = ItemStatusChoices.UNVERIFIED if author.reputation < Configurations.AUTO_VERIFICATION_REPUTATION else ItemStatusChoices.VERIFIED
             if not item:
                 item = Item.objects.create(
-                        latitude=serialized_data.validated_data['latitude'],
-                        longitude=serialized_data.validated_data['longitude'],
+                        latitude=latitude,
+                        longitude=longitude,
                         title=serialized_data.validated_data['title'],
                         description=serialized_data.validated_data['description'],
                         author=author,
@@ -139,15 +149,18 @@ class ItemViewSet(viewsets.ModelViewSet):
         item = self.get_object()
         serialized_data = AddRatingSerializer(data=request.data)
         if serialized_data.is_valid():
+            if not (0.0 <= serialized_data.validated_data['rating'] <= 5.0):
+                return Response({'success': False, 'message': 'Incorrect Rating'}, status=HTTP_400_BAD_REQUEST)
+
             rating = Rating.objects.filter(item=item, author__user=request.user).first()
             if rating:
-                item.rating -= rating.rating
-                item.rating += serialized_data.validated_data['rating']
-                item.save()
-
                 rating.is_anonymous = serialized_data.validated_data['is_anonymous']
                 rating.rating = serialized_data.validated_data['rating']
                 rating.save()
+
+                item.recalculate_rating()
+                item.save()
+
             else:
                 rating = Rating.objects.create(
                         rating=serialized_data.validated_data['rating'],
@@ -155,7 +168,8 @@ class ItemViewSet(viewsets.ModelViewSet):
                         author=get_author(request.user),
                         is_anonymous=serialized_data.validated_data['is_anonymous'],
                 )
-                item.rating += rating.rating
+
+                item.recalculate_rating()
                 item.save()
 
             response = {
