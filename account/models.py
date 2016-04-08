@@ -15,7 +15,6 @@ class UserProfile(models.Model):
     def __str__(self):
         return self.user.first_name + '[' + self.user.email + ']'
 
-
 class UserToken(models.Model):
     user = models.ForeignKey(User)
     token = models.UUIDField(default=uuid.uuid4, editable=False, db_index=True, unique=True)
