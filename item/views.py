@@ -266,7 +266,8 @@ class ItemViewSet(viewsets.ModelViewSet):
 class ReactableViewSet(viewsets.ModelViewSet):
     @staticmethod
     def handle_upvote(request, pk, reactable):
-        reaction = Reaction.objects.filter(author__user=request.user).exclude(reaction=ReactionChoices.FLAG).first()
+        reaction = Reaction.objects.filter(author__user=request.user, reactable=reactable)\
+            .exclude(reaction=ReactionChoices.FLAG).first()
         if reaction:
             reaction.reaction = ReactionChoices.UPVOTE
             reaction.save()
@@ -285,7 +286,8 @@ class ReactableViewSet(viewsets.ModelViewSet):
 
     @staticmethod
     def handle_downvote(request, pk, reactable):
-        reaction = Reaction.objects.filter(author__user=request.user).exclude(reaction=ReactionChoices.FLAG).first()
+        reaction = Reaction.objects.filter(author__user=request.user, reactable=reactable)\
+            .exclude(reaction=ReactionChoices.FLAG).first()
         if reaction:
             reaction.reaction = ReactionChoices.DOWNVOTE
             reaction.save()
@@ -305,7 +307,8 @@ class ReactableViewSet(viewsets.ModelViewSet):
 
     @staticmethod
     def handle_flag(request, pk, reactable):
-        reaction = Reaction.objects.filter(author__user=request.user, reaction=ReactionChoices.FLAG).first()
+        reaction = Reaction.objects.filter(author__user=request.user, reactable=reactable,
+                                           reaction=ReactionChoices.FLAG).first()
         if not reaction:
             Reaction.objects.create(
                     reaction=ReactionChoices.FLAG,
@@ -321,7 +324,8 @@ class ReactableViewSet(viewsets.ModelViewSet):
 
     @staticmethod
     def handle_unflag(request, pk, reactable):
-        reaction = Reaction.objects.filter(author__user=request.user, reaction=ReactionChoices.FLAG).first()
+        reaction = Reaction.objects.filter(author__user=request.user, reactable=reactable,
+                                           reaction=ReactionChoices.FLAG).first()
         if reaction:
             reaction.delete()
 
@@ -333,7 +337,8 @@ class ReactableViewSet(viewsets.ModelViewSet):
 
     @staticmethod
     def handle_unvote(request, pk, reactable):
-        reaction = Reaction.objects.filter(author__user=request.user).exclude(reaction=ReactionChoices.FLAG).first()
+        reaction = Reaction.objects.filter(author__user=request.user, reactable=reactable)\
+            .exclude(reaction=ReactionChoices.FLAG).first()
         if reaction:
             reaction.delete()
 
