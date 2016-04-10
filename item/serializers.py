@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from account.serializers import UserProfileSerializer
-from item.models import Item, Comment, Photo, Rating, WashroomTypes
+from item.models import Item, Comment, Photo, Rating, WashroomTypes, ItemFlags
 
 
 class AuthorSerializer(serializers.ModelSerializer):
@@ -36,6 +36,11 @@ class ItemSerializer(AuthorSerializer):
 class CommentSerializer(AuthorSerializer):
     class Meta:
         model = Comment
+
+
+class ItemFlagsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ItemFlags
 
 
 class PhotoSerializer(AuthorSerializer):

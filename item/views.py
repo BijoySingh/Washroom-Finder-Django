@@ -8,10 +8,11 @@ from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_403_FORBIDDEN
 
 from account.models import UserProfile
-from item.models import Item, Comment, Reaction, ReactionChoices, Photo, Rating, ItemStatusChoices, WashroomTypes
+from item.models import Item, Comment, Reaction, ReactionChoices, Photo, Rating, ItemStatusChoices, WashroomTypes, \
+    ItemFlags
 from item.serializers import CreateItemSerializer, ItemSerializer, BoundingBoxSerializer, CommentSerializer, \
     PhotoSerializer, UpdateItemSerializer, AddRatingSerializer, AddCommentSerializer, \
-    AddPhotoSerializer, RatingSerializer
+    AddPhotoSerializer, RatingSerializer, ItemFlagsSerializer
 from project_hermes.hermes_config import Configurations
 
 
@@ -237,6 +238,32 @@ class ItemViewSet(viewsets.ModelViewSet):
         else:
             return Response({'success': False, 'message': 'Incorrect Data Sent'}, status=HTTP_400_BAD_REQUEST)
 
+    @detail_route(methods=['GET'], permission_classes=[IsAuthenticated])
+    def add_flag(self, request, pk):
+        """
+        ---
+        parameters_strategy:
+            form: replace
+        """
+
+        item = self.get_object()
+        user_flag = ItemFlags.objects.filter(item=item, author__user=request.user).first()
+        if not user_flag:
+            user_flag = ItemFlags.objects.create(
+                item=item,
+                author=get_author(request.user)
+            )
+
+            item.flags = ItemFlags.objects.filter(item=item, author__user=request.user).count()
+            item.save()
+
+        response = {
+            'success': True,
+            'result': ItemFlagsSerializer(user_flag).data
+        }
+        return Response(response)
+
+
     @detail_route(methods=['POST'], permission_classes=[IsAuthenticated])
     def add_comment(self, request, pk):
         """
@@ -280,18 +307,12 @@ class ItemViewSet(viewsets.ModelViewSet):
         item = self.get_object()
         serialized_data = AddPhotoSerializer(data=request.data)
         if serialized_data.is_valid():
-            photo = Photo.objects.filter(item=item, author__user=request.user).first()
-            if photo:
-                photo.description = serialized_data.validated_data['picture']
-                photo.is_anonymous = serialized_data.validated_data['is_anonymous']
-                photo.save()
-            else:
-                photo = Photo.objects.create(
-                        picture=serialized_data.validated_data['picture'],
-                        item=item,
-                        is_anonymous=serialized_data.validated_data['is_anonymous'],
-                        author=get_author(request.user),
-                )
+            photo = Photo.objects.create(
+                    picture=serialized_data.validated_data['picture'],
+                    item=item,
+                    is_anonymous=serialized_data.validated_data['is_anonymous'],
+                    author=get_author(request.user),
+            )
             recalculate_reputation(photo.author)
             response = {
                 'success': True,
@@ -397,7 +418,7 @@ class ReactableViewSet(viewsets.ModelViewSet):
 
         reactable = self.handle_upvote(request, pk, self.get_object())
         recalculate_reputation(reactable.author)
-        recalculate_reputation(request.user)
+        recalculate_reputation(get_author(request.user))
         response = {
             'result': self.serializer_class(reactable).data
         }
@@ -413,7 +434,7 @@ class ReactableViewSet(viewsets.ModelViewSet):
 
         reactable = self.handle_downvote(request, pk, self.get_object())
         recalculate_reputation(reactable.author)
-        recalculate_reputation(request.user)
+        recalculate_reputation(get_author(request.user))
         response = {
             'result': self.serializer_class(reactable).data
         }
@@ -429,7 +450,7 @@ class ReactableViewSet(viewsets.ModelViewSet):
 
         reactable = self.handle_flag(request, pk, self.get_object())
         recalculate_reputation(reactable.author)
-        recalculate_reputation(request.user)
+        recalculate_reputation(get_author(request.user))
         response = {
             'result': self.serializer_class(reactable).data
         }
@@ -445,7 +466,7 @@ class ReactableViewSet(viewsets.ModelViewSet):
 
         reactable = self.handle_unvote(request, pk, self.get_object())
         recalculate_reputation(reactable.author)
-        recalculate_reputation(request.user)
+        recalculate_reputation(get_author(request.user))
         response = {
             'result': self.serializer_class(reactable).data
         }
@@ -461,7 +482,7 @@ class ReactableViewSet(viewsets.ModelViewSet):
 
         reactable = self.handle_unflag(request, pk, self.get_object())
         recalculate_reputation(reactable.author)
-        recalculate_reputation(request.user)
+        recalculate_reputation(get_author(request.user))
         response = {
             'result': self.serializer_class(reactable).data
         }

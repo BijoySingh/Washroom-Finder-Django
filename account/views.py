@@ -9,7 +9,8 @@ from rest_framework.status import HTTP_400_BAD_REQUEST
 
 from account.models import UserProfile
 from account.models import UserToken
-from account.serializers import UserProfileSerializer, LoginSerializer, UserDetailsProfileSerializer
+from account.serializers import UserProfileSerializer, LoginSerializer, UserDetailsProfileSerializer, \
+    UserActivitySerializer
 
 
 class AccountViewSet(viewsets.GenericViewSet):
@@ -19,6 +20,11 @@ class AccountViewSet(viewsets.GenericViewSet):
     def get_profile(self, request):
         profile = UserProfile.objects.filter(user=request.user).first()
         return Response({'result': UserDetailsProfileSerializer(profile).data})
+
+    @list_route(methods=['GET'], permission_classes=[IsAuthenticated])
+    def get_activity(self, request):
+        profile = UserProfile.objects.filter(user=request.user).first()
+        return Response({'result': UserActivitySerializer(profile).data})
 
     @list_route(methods=['POST'])
     def login(self, request):

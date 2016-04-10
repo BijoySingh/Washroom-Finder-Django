@@ -82,11 +82,11 @@ class Item(models.Model):
         self.rating /= weight
 
 
-
 class Rating(models.Model):
     item = models.ForeignKey(Item, related_name='ratings')
     author = models.ForeignKey(UserProfile)
     rating = models.FloatField(default=0.0)
+    timestamp = models.DateTimeField(auto_now_add=True, null=True)
     is_anonymous = models.BooleanField(default=False)
 
     class Meta:
@@ -104,16 +104,18 @@ class Reactable(models.Model):
 
     @staticmethod
     def convert_to_score(count, scale, values=(1, 10, 50, 200, 1000), scores=(1, 2, 4, 8, 16)):
-        for index in reversed(range(len(values))):
-            if values[index] < count:
-                return scores[index]
+        if count <= values[0]:
+            return 0.0
 
-        return 0.0
+        for index in range(len(values)):
+            if values[index] > count:
+                return scale * scores[index - 1]
+        return scale * scores[-1]
 
     def recalculate_score(self):
-        return self.BASE_SCORE - self.convert_to_score(self.flags, 50, values=(0, 4, 8, 16, 32)) \
-               - self.convert_to_score(self.downvotes, 20, values=(0, 5, 10, 20, 50)) \
-               + self.convert_to_score(self.upvotes, 10)
+        return self.BASE_SCORE - self.convert_to_score(self.flags, 5, values=(0, 4, 8, 16, 32)) \
+               - self.convert_to_score(self.downvotes, 2, values=(0, 5, 10, 20, 50)) \
+               + self.convert_to_score(self.upvotes, 1)
 
     def recalculate_votes(self):
         self.upvotes = Reaction.objects.filter(reactable=self, reaction=ReactionChoices.UPVOTE).count()
@@ -124,6 +126,12 @@ class Reactable(models.Model):
 class Reaction(models.Model):
     reaction = models.IntegerField(choices=ReactionChoices.get(), default=ReactionChoices.NONE)
     reactable = models.ForeignKey(Reactable, related_name='reactions')
+    author = models.ForeignKey(UserProfile)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+
+class ItemFlags(models.Model):
+    item = models.ForeignKey(Item, related_name='itemflags')
     author = models.ForeignKey(UserProfile)
     timestamp = models.DateTimeField(auto_now_add=True)
 

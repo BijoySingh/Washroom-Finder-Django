@@ -47,6 +47,44 @@ class UserDetailsProfileSerializer(UserProfileSerializer):
     def get_ratings(self, profile):
         return Rating.objects.filter(author=profile).count()
 
+class UserActivitySerializer(UserProfileSerializer):
+    items = serializers.SerializerMethodField()
+    photos = serializers.SerializerMethodField()
+    comments = serializers.SerializerMethodField()
+    ratings = serializers.SerializerMethodField()
+
+    def get_photos(self, profile):
+        photos = Photo.objects.filter(author=profile).prefetch_related('item')
+        response = []
+        for photo in photos:
+            response.append({'title': photo.item.title, 'timestamp': photo.timestamp,
+                             'id': photo.id, 'xp': photo.experience})
+        return response
+
+    def get_items(self, profile):
+        items = Item.objects.filter(author=profile)
+        response = []
+        for item in items:
+            response.append({'title': item.title, 'timestamp': item.timestamp,
+                             'id': item.id, 'xp': (item.rating * 2 - item.flags * 10)})
+        return response
+
+    def get_comments(self, profile):
+        comments = Comment.objects.filter(author=profile).prefetch_related('item')
+        response = []
+        for comment in comments:
+            response.append({'title': comment.item.title, 'timestamp': comment.timestamp,
+                             'id': comment.id, 'xp': comment.experience})
+        return response
+
+    def get_ratings(self, profile):
+        ratings = Rating.objects.filter(author=profile).prefetch_related('item')
+        response = []
+        for rating in ratings:
+            response.append({'title': rating.item.title, 'timestamp': rating.timestamp,
+                             'id': rating.id, 'xp': 0})
+        return response
+
 
 class LoginSerializer(serializers.Serializer):
     access_token = serializers.CharField()
