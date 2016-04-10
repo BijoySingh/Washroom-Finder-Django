@@ -114,9 +114,9 @@ class ItemViewSet(viewsets.ModelViewSet):
             max_longitude = serialized_data.validated_data['max_longitude']
 
             items = self.get_queryset().filter(latitude__range=[min_latitude, max_latitude],
-                                               longitude__range=[min_longitude, max_longitude])
+                                               longitude__range=[min_longitude, max_longitude]).exclude(status=ItemStatusChoices.REMOVED)
             response = {
-                'results': self.serializer_class(items, many=True).data
+                'results': self.serializer_class(items, many=True, context={'request': request}).data
             }
             return Response(response)
         else:

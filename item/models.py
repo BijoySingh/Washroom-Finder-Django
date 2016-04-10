@@ -81,6 +81,13 @@ class Item(models.Model):
             return 0.0
         self.rating /= weight
 
+        if self.ratings.count() > 5 and self.comments > 2 and self.flags < 5:
+            self.status = ItemStatusChoices.VERIFIED
+        elif self.flags > 15:
+            self.status = ItemStatusChoices.REMOVED
+        else:
+            self.status = ItemStatusChoices.UNVERIFIED
+
 
 class Rating(models.Model):
     item = models.ForeignKey(Item, related_name='ratings')
