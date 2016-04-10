@@ -142,7 +142,7 @@ class ItemViewSet(viewsets.ModelViewSet):
         item = get_object_or_404(Item, pk=pk)
         comments = item.comments.all().order_by('-experience')
         response = {
-            'results': CommentSerializer(comments, many=True).data
+            'results': CommentSerializer(comments, many=True, context={'request': request}).data
         }
         return Response(response)
 
@@ -165,7 +165,7 @@ class ItemViewSet(viewsets.ModelViewSet):
         item = get_object_or_404(Item, pk=pk)
         photos = item.photos.all()
         response = {
-            'results': PhotoSerializer(photos, many=True).data
+            'results': PhotoSerializer(photos, many=True, context={'request': request}).data
         }
         return Response(response)
 
@@ -190,7 +190,7 @@ class ItemViewSet(viewsets.ModelViewSet):
             item.is_free = serialized_data.validated_data['is_free']
             item.save()
             recalculate_reputation(item.author)
-            return Response(self.serializer_class(item).data)
+            return Response(self.serializer_class(item, context={'request': request}).data)
         else:
             return Response({'success': False, 'message': 'Incorrect Data Sent'}, status=HTTP_400_BAD_REQUEST)
 
