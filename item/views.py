@@ -238,7 +238,7 @@ class ItemViewSet(viewsets.ModelViewSet):
         else:
             return Response({'success': False, 'message': 'Incorrect Data Sent'}, status=HTTP_400_BAD_REQUEST)
 
-    @detail_route(methods=['GET'], permission_classes=[IsAuthenticated])
+    @detail_route(methods=['POST'], permission_classes=[IsAuthenticated])
     def add_flag(self, request, pk):
         """
         ---
