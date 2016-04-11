@@ -136,6 +136,8 @@ class Reactable(models.Model):
         elif self.upvotes >= 5:
             score += 3
 
+        return score
+
     def recalculate_votes(self):
         self.upvotes = Reaction.objects.filter(reactable=self, reaction=ReactionChoices.UPVOTE).count()
         self.downvotes = Reaction.objects.filter(reactable=self, reaction=ReactionChoices.DOWNVOTE).count()
