@@ -81,7 +81,7 @@ class Item(models.Model):
             return 0.0
         self.rating /= weight
 
-        if self.ratings.count() > 5 and self.comments.count() + self.photos.count() > 3 and self.flags < 5:
+        if (self.ratings.count() > 5 or self.comments.count() + self.photos.count() > 3) and self.flags < 5:
             self.status = ItemStatusChoices.VERIFIED
         elif self.flags > 15:
             self.status = ItemStatusChoices.REMOVED
