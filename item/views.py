@@ -34,8 +34,17 @@ def recalculate_reputation(profile: UserProfile):
 
     items = Item.objects.filter(author=profile)
     for item in items:
-        reputation += item.rating * 2
-        reputation -= item.flags * 10
+        reputation += 5
+        if item.ratings.count() > 5:
+            reputation += 5
+        if item.comments.count() > 5:
+            reputation += 5
+        if item.photos.count() > 5:
+            reputation += 5
+        if item.flags > 5:
+            reputation -= 15
+        if 0 < item.flags <= 5:
+            reputation -= 5
 
     profile.reputation = reputation
     profile.save()

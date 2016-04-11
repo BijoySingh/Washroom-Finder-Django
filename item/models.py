@@ -101,7 +101,7 @@ class Rating(models.Model):
 
 
 class Reactable(models.Model):
-    BASE_SCORE = 10.0
+    BASE_SCORE = 5.0
 
     upvotes = models.IntegerField(default=0)
     downvotes = models.IntegerField(default=0)
@@ -120,9 +120,21 @@ class Reactable(models.Model):
         return scale * scores[-1]
 
     def recalculate_score(self):
-        return self.BASE_SCORE - self.convert_to_score(self.flags, 5, values=(0, 4, 8, 16, 32)) \
-               - self.convert_to_score(self.downvotes, 2, values=(0, 5, 10, 20, 50)) \
-               + self.convert_to_score(self.upvotes, 1)
+        score = self.BASE_SCORE
+        if 1 < self.flags < 5:
+            score -= 3
+        elif self.flags >= 5:
+            score -= 6
+
+        if 2 < self.downvotes < 5:
+            score -= 1
+        elif self.downvotes >= 5:
+            score -= 3
+
+        if 2 < self.upvotes < 5:
+            score += 1
+        elif self.upvotes >= 5:
+            score += 3
 
     def recalculate_votes(self):
         self.upvotes = Reaction.objects.filter(reactable=self, reaction=ReactionChoices.UPVOTE).count()
